@@ -10,6 +10,7 @@ var gulp = require('gulp'),
 var jsSources = ['js/*.js'],
     sassSources = ['sass/*.scss'],
     htmlSources = ['*.html'],
+	cssSources = ['css/**'],
 	imagesSources = ['images/**'],
     outputCSSDir = 'dist/css',
     outputJSDir = 'dist/js',
@@ -30,6 +31,7 @@ gulp.task('js', function() {
 		.src(jsSources)
 		.pipe(order([
 			'js/jquery.min.js',
+			'js/modernizr-2.6.2.min.js',
 			'js/jquery.easing.1.3.js',
 			'js/bootstrap.min.js',
 			'js/jquery.waypoints.min.js',
@@ -68,6 +70,8 @@ gulp.task('html', function() {
   .pipe(gulp.dest(outputDir))
   .pipe(connect.reload())
 
+  gulp.src(cssSources)
+	  .pipe(gulp.dest(outputCSSDir))
   gulp.src(imagesSources)
 	  .pipe(gulp.dest(outputImages))
 });
