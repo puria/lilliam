@@ -9,9 +9,11 @@ var gulp = require('gulp'),
 
 var jsSources = ['js/*.js'],
     sassSources = ['sass/*.scss'],
-    htmlSources = ['**/*.html', 'images/**'],
+    htmlSources = ['*.html'],
+	imagesSources = ['images/**'],
     outputCSSDir = 'dist/css',
     outputJSDir = 'dist/js',
+	outputImages = 'dist/images',
     outputDir = 'dist';
 
 
@@ -65,6 +67,9 @@ gulp.task('html', function() {
   gulp.src(htmlSources)
   .pipe(gulp.dest(outputDir))
   .pipe(connect.reload())
+
+  gulp.src(imagesSources)
+	  .pipe(gulp.dest(outputImages))
 });
 
 gulp.task('default', ['html', 'js', 'sass', 'connect', 'watch']);
