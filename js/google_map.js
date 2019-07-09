@@ -2,46 +2,43 @@
 var google;
 
 function init() {
-    // Basic options for a simple Google Map
-    // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
-    var myLatlng = new google.maps.LatLng(40.851753, 17.3837113);
-
-    
-    var mapOptions = {
-        // How zoomed in you want the map to start at (always required)
-        zoom: 14,
-
-        // The latitude and longitude to center the map (always required)
-        center: myLatlng,
-
-        // How you would like to style the map. 
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: {lat: 40.851753, lng:17.3837113},
         scrollwheel: false,
-        styles: [{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"simplified"},{"lightness":20}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"hue":"#f49935"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"hue":"#fad959"}]},{"featureType":"road.arterial","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"simplified"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#a1cdfc"},{"saturation":30},{"lightness":49}]}]
-    };
+    });
 
-    
+	var places = ['ChIJD_ohRXRMRhMRyJH1hdKQMtc', 'ChIJvSD4__-vRxMRXKV0D0xMQYM']
+    var infowindow = new google.maps.InfoWindow();
+    var service = new google.maps.places.PlacesService(map);
 
-    // Get the HTML DOM element that will contain your map 
-    // We are using a div with id="map" seen below in the <body>
-    var mapElement = document.getElementById('map');
+    for (var i=0; i < places.length; i++) {
 
-    // Create the Google Map using out element and options defined above
-    var map = new google.maps.Map(mapElement, mapOptions);
-    
-    var addresses = ['Masseria+Torre+Maizza', 'Comune+di+Fasano'];
+        var request = {
+            location: map.getCenter(),
+            placeId: places[i],
+            fields: ['name', 'formatted_address', 'place_id', 'geometry', 'url']
+        };
 
-    for (var x = 0; x < addresses.length; x++) {
-        $.getJSON('https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyARL5x8qOb0odV5RMaMXHGejs46rrhFhsM&address='+addresses[x]+'&sensor=false', null, function (data) {
-            var p = data.results[0].geometry.location
-            var latlng = new google.maps.LatLng(p.lat, p.lng);
-            new google.maps.Marker({
-                position: latlng,
+        service.getDetails(request, function(place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              var marker = new google.maps.Marker({
                 map: map,
-                icon: 'images/loc.png',
-            });
+                position: place.geometry.location
+              });
 
+              google.maps.event.addListener(marker, 'click', (function() {
+                  return function() {
+                    infowindow.setContent('<div><strong>'+ place.name +'</strong><br>' + place.formatted_address +
+                    '<br><br><strong><a href="'+place.url+'">Indicazioni stradali</a></strong></div>');
+                    infowindow.open(map, this);
+                  }
+              })());
+            }
         });
     }
-    
 }
+    
+    
+
 google.maps.event.addDomListener(window, 'load', init);
