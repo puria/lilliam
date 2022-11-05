@@ -9,6 +9,6 @@
     "gulp-util": "latest"
   },
   "dependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^4.0.2"
   }
 }
